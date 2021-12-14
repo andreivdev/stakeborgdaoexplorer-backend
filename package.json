@@ -8,7 +8,9 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "express": "~4.16.1",
+    "mongodb": "^4.2.2",
     "moralis": "^0.0.155",
+    "node-cron": "^3.0.0",
     "web3": "^1.6.1"
   }
 }
