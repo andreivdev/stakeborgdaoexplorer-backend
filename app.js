@@ -15,8 +15,12 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
 });
 
-console.log("getData");
-getData();
+var cron = require("node-cron");
+
+cron.schedule("*/5 * * * *", () => {
+  console.log("getData");
+  getData();
+});
 
 async function getData() {
   let data = await usersData.getAllHoldersData();
@@ -33,7 +37,7 @@ async function getData() {
       .insertOne({ snapshot: snapshotname, data: data })
       .then(function () {
         console.log("Data inserted"); // Success
-        process.exit();
+        client.close();
       })
       .catch(function (error) {
         console.log(error); // Failure
