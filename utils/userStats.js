@@ -379,9 +379,6 @@ async function getAllHolders() {
   let allUsers = [];
 
   let dataOrigins = [
-    "YieldFarmBONDHarvest",
-    "YieldFarmSWINGBYHarvest",
-    "YieldFarmXYZHarvest",
     "STANDARDTokenApproval",
     "USDCSLPTokenApproval",
     "ILSISLPTokenApproval",
@@ -389,15 +386,18 @@ async function getAllHolders() {
     "YieldFarmStakingDeposit",
     "YieldFarmSLPUSDCHarvest",
     "YieldFarmSLPILSIHarvest",
+    "YieldFarmBONDHarvest",
+    "YieldFarmSWINGBYHarvest",
+    "YieldFarmXYZHarvest",
   ];
 
   let dataOriginColumn = [
+    "owner",
+    "owner",
+    "owner",
     "user",
     "user",
     "user",
-    "spender",
-    "spender",
-    "spender",
     "user",
     "user",
     "user",
