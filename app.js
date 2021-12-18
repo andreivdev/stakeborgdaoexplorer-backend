@@ -17,6 +17,7 @@ const client = new MongoClient(uri, {
 
 var cron = require("node-cron");
 
+console.log("cron");
 cron.schedule("*/5 * * * *", () => {
   console.log("getData");
   getData();
@@ -28,7 +29,7 @@ async function getData() {
   console.log("connectDb");
   client.connect(async (err) => {
     console.log(err);
-    let snapshotname = Date.now().toString();
+    let snapshotname = Date.now();
 
     console.log("insertMany");
     client

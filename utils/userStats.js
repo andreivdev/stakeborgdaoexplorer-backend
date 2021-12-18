@@ -247,29 +247,32 @@ async function getFarmingUnclaimedTokens(addr) {
     .getCurrentEpoch()
     .call();
 
-  total_pending_farm += await getFarmingUnclaimedTokensForYieldFarm(
+  let bond_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
     addr,
     currentEpoch,
     yield_unclaimed_bond_contract,
     BOND_contract_address,
     "YieldFarmBONDHarvest"
   );
-  total_pending_farm += await getFarmingUnclaimedTokensForYieldFarm(
+
+  let swingy_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
     addr,
     currentEpoch,
     yield_unclaimed_swingby_contract,
     SWINGBY_contract_address,
     "YieldFarmSWINGBYHarvest"
   );
-  total_pending_farm += await getFarmingUnclaimedTokensForYieldFarm(
-    addr,
-    currentEpoch,
-    yield_unclaimed_xyz_contract,
-    XYZ_contract_address,
-    "YieldFarmXYZHarvest"
-  );
 
-  total_pending_farm += await getFarmingUnclaimedTokensForYieldFarm(
+  let xyz_pending_farm_yield = (total_pending_farm +=
+    await getFarmingUnclaimedTokensForYieldFarm(
+      addr,
+      currentEpoch,
+      yield_unclaimed_xyz_contract,
+      XYZ_contract_address,
+      "YieldFarmXYZHarvest"
+    ));
+
+  let lp_usdc_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
     addr,
     currentEpoch,
     yield_unclaimed_usdc_lp_contract,
@@ -277,7 +280,7 @@ async function getFarmingUnclaimedTokens(addr) {
     "YieldFarmSLPUSDCHarvest"
   );
 
-  total_pending_farm += await getFarmingUnclaimedTokensForYieldFarm(
+  let lp_ilsi_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
     addr,
     currentEpoch,
     yield_unclaimed_ilsi_lp_contract,
@@ -285,7 +288,20 @@ async function getFarmingUnclaimedTokens(addr) {
     "YieldFarmSLPILSIHarvest"
   );
 
-  return total_pending_farm;
+  total_pending_farm += bond_pending_farm_yield;
+  total_pending_farm += swingy_pending_farm_yield;
+  total_pending_farm += xyz_pending_farm_yield;
+  total_pending_farm += lp_usdc_pending_farm_yield;
+  total_pending_farm += lp_ilsi_pending_farm_yield;
+
+  return [
+    bond_pending_farm_yield,
+    swingy_pending_farm_yield,
+    xyz_pending_farm_yield,
+    lp_usdc_pending_farm_yield,
+    lp_ilsi_pending_farm_yield,
+    total_pending_farm,
+  ];
 }
 
 async function getAirdopUnclaimedTokens(addr) {
@@ -303,8 +319,34 @@ async function getUserTokens(addr) {
     (await getGovernanceUnclaimedTokens(addr)) /
       1000000000000000000000000000000000000
   );
-  let _farmingUnclaimed = Number(
-    (await getFarmingUnclaimedTokens(addr)) / 1000000000000000000
+
+  let [
+    bond_pending_farm_yield,
+    swingy_pending_farm_yield,
+    xyz_pending_farm_yield,
+    lp_usdc_pending_farm_yield,
+    lp_ilsi_pending_farm_yield,
+    total_pending_farm,
+  ] = await getFarmingUnclaimedTokens(addr);
+
+  let _farmingUnclaimed_bond = Number(
+    bond_pending_farm_yield / 1000000000000000000
+  );
+  let _farmingUnclaimed_swingby = Number(
+    swingy_pending_farm_yield / 1000000000000000000
+  );
+  let _farmingUnclaimed_xyz = Number(
+    xyz_pending_farm_yield / 1000000000000000000
+  );
+  let _farmingUnclaimed_lp_usdc = Number(
+    lp_usdc_pending_farm_yield / 1000000000000000000
+  );
+  let _farmingUnclaimed_lp_ilsi = Number(
+    lp_ilsi_pending_farm_yield / 1000000000000000000
+  );
+
+  let _farmingUnclaimed_total = Number(
+    total_pending_farm / 1000000000000000000
   );
   let _airdropUnclaimed = Number(
     (await getAirdopUnclaimedTokens(addr)) / 1000000000000000000
@@ -315,7 +357,12 @@ async function getUserTokens(addr) {
     wallet: _wallet.toFixed(2),
     governanceStaking: _governanceStaking.toFixed(2),
     governanceUnclaimed: _governanceUnclaimed.toFixed(2),
-    farmingUnclaimed: _farmingUnclaimed.toFixed(2),
+    farmingUnclaimed_bond: _farmingUnclaimed_bond.toFixed(2),
+    farmingUnclaimed_swingby: _farmingUnclaimed_swingby.toFixed(2),
+    farmingUnclaimed_xyz: _farmingUnclaimed_xyz.toFixed(2),
+    farmingUnclaimed_lp_usdc: _farmingUnclaimed_lp_usdc.toFixed(2),
+    farmingUnclaimed_lp_ilsi: _farmingUnclaimed_lp_ilsi.toFixed(2),
+    farmingUnclaimed: _farmingUnclaimed_total.toFixed(2),
     airdropUnclaimed: _airdropUnclaimed.toFixed(2),
     total: (
       _wallet +
@@ -339,6 +386,7 @@ async function getAllHolders() {
     "GovernanceStakingDeposit",
     "YieldFarmStakingDeposit",
     "YieldFarmSLPUSDCHarvest",
+    "YieldFarmSLPILSIHarvest",
   ];
 
   let dataOriginColumn = [
@@ -346,6 +394,7 @@ async function getAllHolders() {
     "user",
     "user",
     "spender",
+    "user",
     "user",
     "user",
     "user",
@@ -399,6 +448,11 @@ async function getAllHoldersData() {
         wallet: holderData.wallet,
         governanceStaking: holderData.governanceStaking,
         governanceUnclaimed: holderData.governanceUnclaimed,
+        farmingUnclaimed_bond: holderData.farmingUnclaimed_bond,
+        farmingUnclaimed_swingby: holderData.farmingUnclaimed_swingby,
+        farmingUnclaimed_xyz: holderData.farmingUnclaimed_xyz,
+        farmingUnclaimed_lp_usdc: holderData.farmingUnclaimed_lp_usdc,
+        farmingUnclaimed_lp_ilsi: holderData.farmingUnclaimed_lp_ilsi,
         farmingUnclaimed: holderData.farmingUnclaimed,
         airdropUnclaimed: holderData.airdropUnclaimed,
         total: holderData.total,
@@ -406,20 +460,6 @@ async function getAllHoldersData() {
     })
   );
   return data;
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-class PendingPromise {
-  constructor(args) {
-    this.args = args;
-  }
-
-  execute() {
-    return new Promise(this.args);
-  }
 }
 
 exports.getAllHoldersData = getAllHoldersData;
