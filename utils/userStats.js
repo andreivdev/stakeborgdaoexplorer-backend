@@ -263,14 +263,13 @@ async function getFarmingUnclaimedTokens(addr) {
     "YieldFarmSWINGBYHarvest"
   );
 
-  let xyz_pending_farm_yield = (total_pending_farm +=
-    await getFarmingUnclaimedTokensForYieldFarm(
-      addr,
-      currentEpoch,
-      yield_unclaimed_xyz_contract,
-      XYZ_contract_address,
-      "YieldFarmXYZHarvest"
-    ));
+  let xyz_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
+    addr,
+    currentEpoch,
+    yield_unclaimed_xyz_contract,
+    XYZ_contract_address,
+    "YieldFarmXYZHarvest"
+  );
 
   let lp_usdc_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
     addr,
@@ -348,6 +347,7 @@ async function getUserTokens(addr) {
   let _farmingUnclaimed_total = Number(
     total_pending_farm / 1000000000000000000
   );
+
   let _airdropUnclaimed = Number(
     (await getAirdopUnclaimedTokens(addr)) / 1000000000000000000
   );
