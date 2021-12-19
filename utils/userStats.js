@@ -368,7 +368,7 @@ async function getUserTokens(addr) {
       _wallet +
       _governanceStaking +
       _governanceUnclaimed +
-      _farmingUnclaimed +
+      _farmingUnclaimed_total +
       _airdropUnclaimed
     ).toFixed(2),
   };
