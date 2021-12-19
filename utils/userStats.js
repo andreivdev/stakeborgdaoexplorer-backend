@@ -8,6 +8,7 @@ var yieldfarmtoken_usdc_lp_abi = require("./../abi/yieldfarmtoken_usdc_lp.json")
 var yieldfarmtoken_ilsi_lp_abi = require("./../abi/yieldfarmtoken_ilsi_lp.json");
 var yieldstaking_abi = require("./../abi/yieldstaking.json");
 var Web3 = require("web3");
+var ethers = require("ethers");
 require("dotenv").config();
 
 const Moralis = require("moralis/node");
@@ -17,6 +18,10 @@ Moralis.start({
   appId: process.env.REACT_APP_MORALIS_APP,
   masterKey: process.env.REACT_APP_MORALIS_MASTER,
 });
+
+const provider = new ethers.providers.StaticJsonRpcProvider(
+  process.env.REACT_APP_AWS_NODE
+);
 
 const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.REACT_APP_AWS_NODE)
@@ -32,6 +37,7 @@ const ILSI_SLP_contract_address = "0x753f33c13fe44d41a8cc6ac202a6de6c53c58b6a";
 
 const governance_staking_dao_contract_adress =
   "0xbA319F6F6AC8F45E556918A0C9ECDDE64335265C";
+
 const governance_rewards_contract_address =
   "0x1fC8EfDb15FD5f9250077dD820C201B36bBc1f0B";
 
@@ -352,8 +358,11 @@ async function getUserTokens(addr) {
     (await getAirdopUnclaimedTokens(addr)) / 1000000000000000000
   );
 
+  let _ens = await provider.lookupAddress(_addr);
+
   let user = {
     address: _addr,
+    ens: _ens || "",
     wallet: _wallet.toFixed(2),
     governanceStaking: _governanceStaking.toFixed(2),
     governanceUnclaimed: _governanceUnclaimed.toFixed(2),
@@ -450,20 +459,7 @@ async function getAllHoldersData() {
   await Promise.all(
     holders.map(async (holder) => {
       let holderData = await getUserTokens(holder);
-      data.push({
-        address: holder,
-        wallet: holderData.wallet,
-        governanceStaking: holderData.governanceStaking,
-        governanceUnclaimed: holderData.governanceUnclaimed,
-        farmingUnclaimed_bond: holderData.farmingUnclaimed_bond,
-        farmingUnclaimed_swingby: holderData.farmingUnclaimed_swingby,
-        farmingUnclaimed_xyz: holderData.farmingUnclaimed_xyz,
-        farmingUnclaimed_lp_usdc: holderData.farmingUnclaimed_lp_usdc,
-        farmingUnclaimed_lp_ilsi: holderData.farmingUnclaimed_lp_ilsi,
-        farmingUnclaimed: holderData.farmingUnclaimed,
-        airdropUnclaimed: holderData.airdropUnclaimed,
-        total: holderData.total,
-      });
+      data.push(holderData);
     })
   );
   return data;
