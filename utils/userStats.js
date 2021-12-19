@@ -441,12 +441,10 @@ async function getAllHoldersData() {
 
   holders = holders.filter(function (item) {
     //this is a smart contract which we don't care about
-    return item !== "0xba319f6f6ac8f45e556918a0c9ecdde64335265c";
-  });
-
-  holders = holders.filter(function (item) {
-    //this is a smart contract which we don't care about
-    return item !== "0x64bbbdf946463183763cdaf91f1ab9b7370fbf83";
+    return (
+      item !== "0xba319f6f6ac8f45e556918a0c9ecdde64335265c" ||
+      item !== "0x64bbbdf946463183763cdaf91f1ab9b7370fbf83"
+    );
   });
 
   await Promise.all(
