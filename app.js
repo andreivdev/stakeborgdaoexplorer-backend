@@ -18,7 +18,7 @@ const client = new MongoClient(uri, {
 var cron = require("node-cron");
 
 console.log("cron");
-cron.schedule("*/5 * * * *", () => {
+cron.schedule("*/10 * * * *", () => {
   console.log("getData");
   getData();
 });
