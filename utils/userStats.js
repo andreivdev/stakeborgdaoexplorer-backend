@@ -200,7 +200,7 @@ async function getFarmingUnclaimedTokensForYieldFarm(
       })
     );
   }
-  for (let epoch = 1; epoch <= currentEpoch; epoch++) {
+  for (let epoch = startingEpoch; epoch <= currentEpoch; epoch++) {
     promises.push(
       // eslint-disable-next-line no-loop-func
       new Promise((resolve, rej) => {
@@ -218,10 +218,10 @@ async function getFarmingUnclaimedTokensForYieldFarm(
   batch.execute();
 
   await Promise.all(promises).then((res) => {
-    const firstBatch = res.slice(0, currentEpoch);
-    const secondBatch = res.slice(currentEpoch);
+    const firstBatch = res.slice(0, currentEpoch - startingEpoch + 1);
+    const secondBatch = res.slice(currentEpoch - startingEpoch + 1);
 
-    for (let i = 0; i < currentEpoch; i++) {
+    for (let i = 0; i < firstBatch.length; i++) {
       if (secondBatch[i] != 0) {
         pending_farm +=
           ((totalDistributedAmount / numberOfEpochs) * firstBatch[i]) /
@@ -283,7 +283,7 @@ async function getFarmingUnclaimedTokens(addr) {
 
   let lp_usdc_pending_farm_yield = await getFarmingUnclaimedTokensForYieldFarm(
     addr,
-    1,
+    2,
     currentEpoch,
     yield_unclaimed_usdc_lp_contract,
     USDC_SLP_contract_address,
