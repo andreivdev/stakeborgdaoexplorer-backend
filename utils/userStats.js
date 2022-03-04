@@ -19,9 +19,9 @@ Moralis.start({
   masterKey: process.env.REACT_APP_MORALIS_MASTER,
 });
 
-const provider = new ethers.providers.StaticJsonRpcProvider(
-  process.env.REACT_APP_AWS_NODE
-);
+// const provider = new ethers.providers.StaticJsonRpcProvider(
+//   process.env.REACT_APP_AWS_NODE
+// );
 
 const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.REACT_APP_AWS_NODE)
@@ -364,7 +364,7 @@ async function getUserTokens(addr) {
     (await getAirdopUnclaimedTokens(addr)) / 1000000000000000000
   );
 
-  let _ens = await provider.lookupAddress(_addr);
+  let _ens = ""; //await provider.lookupAddress(_addr);
 
   let user = {
     address: _addr,
